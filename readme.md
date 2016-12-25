@@ -20,3 +20,19 @@ where
 * Markdown
 
 
+
+## Details
+
+To get collapsable sections in HTML this function uses the `<details>`/`<summary>` tag structure, e.g.
+
+```
+<details>
+<summary>Summary: click here to see the details</summary>
+These are the details that are hidden by default.
+</details>
+```
+
+From what I gather the cross-browser support for this is reasonably good. I chose to use this because it is a pure HTML solution not requiring Javascript.
+
+Also, note that the headers are no longer coded as header tags (e.g. `<h1>`, `<h2>`, `<h3>` etc.) but as `<span>` tags. This is because if I used the header tags then the header appears on a separate line after the triangle used to collapse the section.
+

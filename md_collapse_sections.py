@@ -2,6 +2,7 @@ import markdown
 import sys
 
 
+
 if len(sys.argv)!=3:
     print("Usage: python md_collapse_sections.py INPUT.md OUTPUT.html")
     sys.exit(-1)
@@ -16,12 +17,16 @@ def chop_sections(inp):
     highest header level and return the markdown for each section individually. 
 
     Arguments
-    inp : list of strings where each element is a line
+    inp : list of strings where each element is a line from the Markdown file.
+
+    Returns a string containing the HTML for the input Markdown.
     """
 
     inps = [ l.strip() for l in inp ]
 
-    # Build a structure where we list each header separately
+    # Build a structure where each line is turned into a tuple (h,c)
+    # where h is the header level (0 if this is not a header), c is the
+    # contents (i.e. the header label itself or the contents of the line if not a header).
     headers = []
     for l in inps:
         # Determine the header level by looking at how many
@@ -30,10 +35,17 @@ def chop_sections(inp):
         while lvl<len(l)-1 and l[lvl]=="#": lvl+=1
         headers.append( (lvl,l[lvl:].strip()) )
 
-    #print(headers)
     
     def chop(lines):
-        """ Chops up according to the highest level in the hierarchy. """
+        """ 
+        Turns markdown (with (header,content) structure) into html. This function is called recursively.
+        
+        Arguments
+        lines : a list of (header,content) tuples (see above).
+
+        Returns
+        A string corresponding to the HTML output.
+        """
         # Find the highest header level (i.e. the lowest nonzero number of pounds)
         hlvls = [ h for (h,_) in lines if h!=0 ]
         if len(hlvls)==0:
@@ -57,7 +69,8 @@ def chop_sections(inp):
         if len(buff)>0:
             sections.append( (maxhdr,curr_header,chop(buff)) )
 
-        # Now let's build the output
+        # Now let's build the output, i.e. each header can be turned into a details-summary
+        # tag structure.
         outp = ""
         for (hlvl,h,contents) in sections:
             if h!="":
